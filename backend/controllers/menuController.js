@@ -1,11 +1,13 @@
 const asyncHandler = require('express-async-handler');
 const MenuItem = require('../models/MenuItem');
 
-// @desc    Get all menu items
+// @desc    Get all menu items (optionally filtered by eatery)
 // @route   GET /api/menu
 // @access  Public
 const getMenu = asyncHandler(async (req, res) => {
-  const menuItems = await MenuItem.find({}).sort({ createdAt: -1 });
+  const { eateryId } = req.query;
+  const filter = eateryId ? { eatery: eateryId } : {};
+  const menuItems = await MenuItem.find(filter).sort({ createdAt: -1 }).populate('eatery');
   res.json(menuItems);
 });
 
@@ -13,7 +15,7 @@ const getMenu = asyncHandler(async (req, res) => {
 // @route   GET /api/menu/:id
 // @access  Public
 const getMenuItemById = asyncHandler(async (req, res) => {
-  const item = await MenuItem.findById(req.params.id);
+  const item = await MenuItem.findById(req.params.id).populate('eatery');
   if (item) {
     res.json(item);
   } else {
@@ -24,23 +26,28 @@ const getMenuItemById = asyncHandler(async (req, res) => {
 
 // @desc    Create a menu item
 // @route   POST /api/menu
-// @access  Private/Admin
+// @access  Private/Admin/Staff
 const createMenuItem = asyncHandler(async (req, res) => {
-  const { name, price, description, category, imageUrl } = req.body;
+  const { name, price, description, category, imageUrl, eateryId } = req.body;
 
-  const itemExists = await MenuItem.findOne({ name });
+  if (!eateryId) {
+    res.status(400);
+    throw new Error('Eatery ID is required');
+  }
 
+  const itemExists = await MenuItem.findOne({ name, eatery: eateryId });
   if (itemExists) {
     res.status(400);
-    throw new Error('Menu item already exists');
+    throw new Error('Menu item already exists in this eatery');
   }
 
   const menuItem = new MenuItem({
     name,
-    price,
+    price: Number(price),
     description,
     category,
     imageUrl: imageUrl || '',
+    eatery: eateryId
   });
 
   const createdItem = await menuItem.save();
@@ -49,7 +56,7 @@ const createMenuItem = asyncHandler(async (req, res) => {
 
 // @desc    Update a menu item
 // @route   PUT /api/menu/:id
-// @access  Private/Admin
+// @access  Private/Admin/Staff
 const updateMenuItem = asyncHandler(async (req, res) => {
   const { name, price, description, category, imageUrl, isAvailable } = req.body;
 
@@ -57,7 +64,7 @@ const updateMenuItem = asyncHandler(async (req, res) => {
 
   if (item) {
     item.name = name || item.name;
-    item.price = price || item.price;
+    item.price = price !== undefined ? Number(price) : item.price;
     item.description = description || item.description;
     item.category = category || item.category;
     item.imageUrl = imageUrl || item.imageUrl;
@@ -73,7 +80,7 @@ const updateMenuItem = asyncHandler(async (req, res) => {
 
 // @desc    Delete a menu item
 // @route   DELETE /api/menu/:id
-// @access  Private/Admin
+// @access  Private/Admin/Staff
 const deleteMenuItem = asyncHandler(async (req, res) => {
   const item = await MenuItem.findById(req.params.id);
 

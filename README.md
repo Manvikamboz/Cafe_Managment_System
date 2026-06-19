@@ -1,86 +1,87 @@
-# ☕ Smart Café Management System
+# 🍔 FoodSpot - Geolocation-Based Food Discovery & Order Aggregator
 
-A premium, full-stack MERN application designed for a modern, high-end cafe experience. Inspired by the bold and sophisticated aesthetic of world-class coffee brands, Smart Café combines artisanal design with powerful automation.
+FoodSpot is a premium, full-stack MERN location-aware web application that solves the problem of fragmented food discovery. Instead of switching between maps, reviews, and delivery apps, users can explore local restaurants, cafes, and street-food stalls, check menus/prices, post reviews, and simulate deliveries in one seamless dashboard.
 
-![Hero Showcase](/frontend/public/images/hero.png)
+![Hero Showcase](frontend/public/images/hero.png)
 
 ## 🌟 Key Features
 
-- **🎯 Starbucks-Inspired UI**: A professional, dark-green themed interface with glassmorphism, bold industrial typography, and high-quality product showcases.
-- **🔐 Secure Authentication**: JWT-based authentication with Role-Based Access Control (RBAC) for Customers, Staff, and Admins.
-- **🛒 Dynamic Basket System**: Robust shopping cart with real-time updates and persistence.
-- **🛰️ Real-time Order Tracking**: Live order status updates (Preparing, Ready, Out for Delivery) powered by **Socket.io**.
-- **🤖 AI Barista Assistant**: Integrated chatbot to help customers with menu recommendations and order tracking.
-- **📊 Admin & Staff Dashboards**:
-  - **Admins**: Full CRUD control over menu items, users, and business analytics.
-  - **Staff**: Real-time order fulfillment interface with instant notifications.
-- **💖 Customer Feedback & Reviews**: A dedicated "Wall of Love" for verified guest testimonials and a feedback submission system.
+* **📍 Geolocation Discovery & Proximity Sorting**: Calculate real-time distances from the user's GPS coordinates or simulate mock coordinates using preset location tags (MG Road, Indiranagar, Koramangala, Jayanagar) to sort eateries dynamically.
+* **🗺️ Google Maps Dark-Mode Embedding**: Dynamically generates embedded Google Maps iframes based on eatery addresses, styled with custom dark overlays to fit the platform's visual identity.
+* **⚡ Live Swiggy Delivery API Simulation**: Placing an order triggers a background courier dispatcher cycle that advances status in real-time (`pending` ➔ `preparing` ➔ `out-for-delivery` ➔ `delivered`) via **Socket.io** streaming.
+* **🛍️ Developer Sandbox Modal**: Try out simulated Swiggy courier dispatches right from the eatery details page to test coordinate matching and delivery partner assignments.
+* **🔐 Secure Authentication**: JWT-based authentication with Role-Based Access Control (RBAC) supporting Customers, Staff, and Admins.
+* **🤖 FoodSpot Assistant**: Integrated chatbot to help customers find restaurants, cuisines, street food recommendations, and explain delivery redirections.
+* **💖 Community Testimonials**: Verified customer feedback system and average star ratings recalculated dynamically.
 
 ## 🏗️ Architecture & Technology
 
 ### Backend (Node.js & Express)
-- **Modular Service Pattern**: Separated controllers, routes, models, and services for maximum scalability.
-- **MongoDB & Mongoose**: Schema-driven data storage with advanced population and indexing.
-- **Real-time Engine**: Socket.io integration for instant bi-directional communication.
-- **Security**: Password hashing with Bcrypt and secure session handling with JWT.
+* **Modular Service Pattern**: Clean separation of controllers, routes, models, and services.
+* **MongoDB & Mongoose**: Schema-driven MERN server with full relational definitions linking Users, Eateries, MenuItems, Reviews, and Orders.
+* **Real-time Engine**: Socket.io server to broadcast order progression events.
+* **MongoDB Community Server 7.0.15**: Run locally via custom precompiled binaries.
 
 ### Frontend (React & Vite)
-- **State Management**: Context API for global auth and cart state.
-- **Animations**: **Framer Motion** for smooth, premium transitions and micro-interactions.
-- **UI Components**: **Lucide React** icons and customized CSS design system.
-- **API Layer**: Centralized Axios instance with request/response interceptors.
+* **State Management**: React Context API for global Auth and Basket state.
+* **Animations**: Framer Motion for smooth transitions and interactive micro-interactions.
+* **Iconography**: Lucide React.
+* **API Client**: Axios instance configured with token interceptors and base routing.
 
 ## 📁 Project Structure
 
-```
-flask-1/
+```text
+Cafe_web/
 ├── backend/            # Express API Server
 │   ├── config/         # Database & environment config
-│   ├── controllers/    # Business logic handlers
-│   ├── middleware/     # Auth, error, and validation middleware
-│   ├── models/         # Mongoose schemas
-│   ├── routes/         # API endpoint definitions
-│   └── services/       # Socket.io & background services
-├── frontend/           # React Client
-│   ├── public/         # Static assets & images
+│   ├── controllers/    # Business logic (auth, eateries, menus, orders, reviews)
+│   ├── middleware/     # JWT Auth and error handlers
+│   ├── models/         # Mongoose schemas (User, Eatery, MenuItem, Order, Review)
+│   ├── routes/         # Express endpoint definitions
+│   └── services/       # Socket.io emitter service
+├── frontend/           # React Client (Vite)
+│   ├── public/         # Static assets
 │   └── src/
-│       ├── api/        # Axios configuration
-│       ├── components/ # Reusable UI components
-│       ├── context/    # Global state (Auth/Cart)
-│       ├── pages/      # View components
-│       └── App.jsx     # Main routing & layout
+│       ├── api/        # Centralized Axios setup
+│       ├── components/ # Reusable elements (Navbar, ChatbotWidget)
+│       ├── context/    # Global context managers
+│       ├── pages/      # View pages (Home, EateryDetail, Cart, OrderTracking)
+│       └── App.jsx     # Route mappings & entry point
+└── mongodb/            # Local MongoDB binary runtime
 ```
 
 ## 🚀 Getting Started
 
-### 1. Prerequisites
-- Node.js (v16+)
-- MongoDB Atlas account (or local MongoDB)
+### 1. Start MongoDB Daemon
+FoodSpot uses a local MongoDB instance. Run the binary from the root directory:
+```bash
+cd mongodb
+mkdir -p data
+./mongodb-linux-x86_64-ubuntu2204-7.0.15/bin/mongod --dbpath data --port 27017 --bind_ip 127.0.0.1
+```
 
-### 2. Backend Setup
+### 2. Start Backend Server
 ```bash
 cd backend
 npm install
-cp .env.example .env   # Update with your MONGO_URI and JWT_SECRET
 npm run dev
 ```
+*Note: The backend will automatically connect to MongoDB and seed 5 eateries and 15 menu items if the database is empty.*
 
-### 3. Frontend Setup
+### 3. Start Frontend Client
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+Open `http://localhost:3000` in your web browser.
 
-### 4. Default Credentials
-- **Admin**: Create a user via registration and manually change `role` to `admin` in the database.
-- **Staff**: Register and change `role` to `staff`.
-
-## 🎨 Design Tokens
-- **Primary Green**: `#007042`
-- **Dark Forest**: `#1e3932`
-- **Cream Accent**: `#d4e9e2`
-- **Typography**: Outfit & Playfair Display
+## 🎨 Design System
+* **Primary (Culinary Orange)**: `#ff523b`
+* **Background Dark**: `#0c0d14`
+* **Card Surface**: `#151622`
+* **Text Primary**: `#ffffff`
+* **Typography**: Outfit & Playfair Display
 
 ---
-*Built with ❤️ by the Smart Café Team.*
+*Built with ❤️ by the FoodSpot Team.*

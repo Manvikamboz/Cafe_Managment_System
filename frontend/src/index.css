@@ -1,30 +1,30 @@
 :root {
-  /* Color Palette - Starbucks Inspired */
-  --primary: #007042;
-  --primary-light: #d4e9e2;
-  --primary-dark: #1e3932;
-  --secondary: #1e3932;
-  --accent: #d4e9e2;
+  /* Color Palette - FoodSpot Culinary Theme */
+  --primary: #ff523b;
+  --primary-light: #ffebe9;
+  --primary-dark: #cc2a14;
+  --secondary: #1a1a24;
+  --accent: #ffd1ca;
   
-  --bg-main: #1e3932; /* Dark Green */
-  --bg-card: #ffffff;
-  --bg-dark: #000000;
+  --bg-main: #0c0d14; /* Deep Premium Space/Charcoal */
+  --bg-card: #151622; /* Card color */
+  --bg-dark: #07070b;
   
-  --text-main: #ffffff;
-  --text-dark: #1e3932;
-  --text-muted: #d4e9e2;
+  --text-main: #f3f4f6;
+  --text-dark: #1f2937;
+  --text-muted: #9ca3af;
   
-  --border-light: rgba(255, 255, 255, 0.1);
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
-  --shadow-md: 0 4px 12px -2px rgba(0,0,0,0.3);
-  --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.4);
+  --border-light: rgba(255, 255, 255, 0.08);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
+  --shadow-md: 0 8px 24px -4px rgba(0,0,0,0.6);
+  --shadow-lg: 0 20px 35px -8px rgba(0,0,0,0.8);
   
-  --radius-sm: 8px;
-  --radius-md: 24px;
-  --radius-lg: 40px;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 32px;
   --radius-full: 9999px;
 
-  --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {

@@ -10,7 +10,10 @@ const getUserCart = asyncHandler(async (req, res) => {
     throw new Error('Not authorized');
   }
 
-  let cart = await Cart.findOne({ user: req.user._id }).populate('items.menuItem');
+  let cart = await Cart.findOne({ user: req.user._id }).populate({
+    path: 'items.menuItem',
+    populate: { path: 'eatery' }
+  });
 
   if (!cart) {
     cart = await Cart.create({ user: req.user._id, items: [] });
@@ -50,7 +53,10 @@ const addToCart = asyncHandler(async (req, res) => {
   await cart.save();
   
   // Return populated cart
-  const updatedCart = await Cart.findById(cart._id).populate('items.menuItem');
+  const updatedCart = await Cart.findById(cart._id).populate({
+    path: 'items.menuItem',
+    populate: { path: 'eatery' }
+  });
   res.json(updatedCart);
 });
 
@@ -78,7 +84,10 @@ const updateCartItem = asyncHandler(async (req, res) => {
       cart.items[itemIndex].quantity = quantity;
     }
     await cart.save();
-    const updatedCart = await Cart.findById(cart._id).populate('items.menuItem');
+    const updatedCart = await Cart.findById(cart._id).populate({
+      path: 'items.menuItem',
+      populate: { path: 'eatery' }
+    });
     res.json(updatedCart);
   } else {
     res.status(404);
@@ -97,7 +106,10 @@ const removeFromCart = asyncHandler(async (req, res) => {
       (item) => item.menuItem.toString() !== req.params.itemId
     );
     await cart.save();
-    const updatedCart = await Cart.findById(cart._id).populate('items.menuItem');
+    const updatedCart = await Cart.findById(cart._id).populate({
+      path: 'items.menuItem',
+      populate: { path: 'eatery' }
+    });
     res.json(updatedCart);
   } else {
     res.status(404);

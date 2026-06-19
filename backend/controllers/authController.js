@@ -8,7 +8,7 @@ const User = require('../models/User');
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).populate('favorites');
 
   if (user && (await user.matchPassword(password))) {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'secret123', {
@@ -20,6 +20,7 @@ const loginUser = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      favorites: user.favorites || [],
       token,
     });
   } else {
@@ -46,6 +47,7 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password,
     role: role || 'customer',
+    favorites: []
   });
 
   if (user) {
@@ -58,6 +60,7 @@ const registerUser = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      favorites: [],
       token,
     });
   } else {
@@ -70,7 +73,7 @@ const registerUser = asyncHandler(async (req, res) => {
 // @route   GET /api/auth/me
 // @access  Private
 const getUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
+  const user = await User.findById(req.user._id).populate('favorites');
 
   if (user) {
     res.json({
@@ -78,6 +81,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      favorites: user.favorites || []
     });
   } else {
     res.status(404);

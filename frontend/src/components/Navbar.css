@@ -2,63 +2,191 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 5%;
-  background: var(--bg-main);
+  padding: 1.25rem 4%;
+  background: rgba(12, 13, 20, 0.85);
+  backdrop-filter: blur(12px);
   position: sticky;
   top: 0;
   z-index: 1000;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .logo-wrap {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  text-decoration: none;
+  color: var(--text-main);
+  transition: var(--transition-smooth);
+}
+
+.logo-wrap:hover {
+  transform: translateY(-1px);
 }
 
 .logo-circle {
-  width: 45px;
-  height: 45px;
-  background: var(--primary);
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  box-shadow: 0 4px 12px rgba(255, 82, 59, 0.3);
+}
+
+.logo-text {
+  font-size: 1.4rem;
   font-weight: 900;
-  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.logo-highlight {
+  color: var(--primary);
 }
 
 .nav-list {
   display: flex;
   list-style: none;
-  gap: 3rem;
+  gap: 2rem;
   align-items: center;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 0.75rem 2.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.5rem 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-full);
 }
 
 .nav-link {
-  color: white;
+  color: var(--text-muted);
   text-decoration: none;
-  font-weight: 600;
-  font-size: 0.85rem;
+  font-weight: 700;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
   transition: var(--transition-smooth);
+  padding: 0.25rem 0.5rem;
 }
 
 .nav-link:hover, .nav-link.active {
-  color: var(--primary-light);
+  color: var(--primary);
 }
 
-.nav-icons {
+.admin-nav {
+  color: #ffb84d;
+}
+
+.staff-nav {
+  color: #4da6ff;
+}
+
+.nav-actions {
   display: flex;
+  align-items: center;
   gap: 1.5rem;
-  color: white;
 }
 
-@media (max-width: 768px) {
+.cart-badge-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: var(--transition-smooth);
+}
+
+.cart-badge-btn:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 82, 59, 0.2);
+}
+
+.user-profile-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.user-role-badge {
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  background: var(--primary);
+  color: white;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.user-name-tag {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.btn-logout {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem;
+  transition: var(--transition-smooth);
+}
+
+.btn-logout:hover {
+  color: var(--primary);
+  transform: scale(1.1);
+}
+
+.auth-btns {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.nav-login-btn {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: var(--transition-smooth);
+}
+
+.nav-login-btn:hover {
+  color: var(--primary);
+}
+
+.nav-register-btn {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: white;
+  background: var(--primary);
+  padding: 0.6rem 1.5rem;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: var(--transition-smooth);
+  box-shadow: 0 4px 12px rgba(255, 82, 59, 0.25);
+}
+
+.nav-register-btn:hover {
+  background: white;
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 900px) {
   .nav-list { display: none; }
 }
