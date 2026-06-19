@@ -2,8 +2,6 @@
 
 FoodSpot is a premium, full-stack MERN location-aware web application that solves the problem of fragmented food discovery. Instead of switching between maps, reviews, and delivery apps, users can explore local restaurants, cafes, and street-food stalls, check menus/prices, post reviews, and simulate deliveries in one seamless dashboard.
 
-![Hero Showcase](frontend/public/images/hero.png)
-
 ## 🌟 Key Features
 
 * **📍 Geolocation Discovery & Proximity Sorting**: Calculate real-time distances from the user's GPS coordinates or simulate mock coordinates using preset location tags (MG Road, Indiranagar, Koramangala, Jayanagar) to sort eateries dynamically.
