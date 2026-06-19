@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import Home from './pages/Home.jsx';
-import Menu from './pages/Menu.jsx';
+import EateryDetail from './pages/EateryDetail.jsx';
 import Cart from './pages/Cart.jsx';
 import Feedback from './pages/Feedback.jsx';
 import Reviews from './pages/Reviews.jsx';
@@ -34,7 +34,8 @@ function App() {
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/cookbook" element={<Menu />} />
+          <Route path="/eatery/:id" element={<EateryDetail />} />
+          <Route path="/cookbook" element={<Navigate to="/" replace />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/reviews" element={<Reviews />} />

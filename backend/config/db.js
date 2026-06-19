@@ -11,10 +11,7 @@ const connectDB = async () => {
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`MongoDB connection failed: ${error.message}`);
-    // Don't exit process immediately in development to allow nodemon to keep watching
-    if (process.env.NODE_ENV === 'production') {
-      process.exit(1);
-    }
+    throw error;
   }
 };
 

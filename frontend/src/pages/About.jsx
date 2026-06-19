@@ -7,37 +7,38 @@ export default function About() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
+      style={{ paddingTop: '6rem', paddingBottom: '8rem' }}
     >
-      <div className="hero-mini">
-        <h1 className="page-title playfair">Our Story</h1>
-        <p className="subtitle">Driven by passion, defined by quality.</p>
+      <div className="hero-mini" style={{ textAlign: 'center', marginBottom: '5rem' }}>
+        <h1 className="page-title">Our Story</h1>
+        <p className="subtitle">Driven by passion, defined by quality, powered by discovery.</p>
       </div>
 
-      <div className="grid" style={{ gridTemplateColumns: '1.5fr 1fr', alignItems: 'center' }}>
-        <div className="card">
-          <h2>Redefining the Café Experience</h2>
-          <p style={{ margin: '1rem 0' }}>
-            Smart Café began with a simple idea: that great food and modern technology should go hand in hand. 
-            We've built a space where you can enjoy artisanal coffee and gourmet meals with the convenience of 
-            real-time tracking and seamless digital interactions.
+      <div className="grid" style={{ gridTemplateColumns: '1.5fr 1fr', alignItems: 'stretch', gap: '3rem' }}>
+        <div className="card" style={{ background: 'var(--bg-card)', color: 'var(--text-main)', border: '1px solid var(--border-light)' }}>
+          <h2>Redefining Food Discovery</h2>
+          <p style={{ margin: '1.5rem 0', lineHeight: 1.7 }}>
+            FoodSpot began with a simple idea: to solve the common problem of fragmented food discovery. 
+            Instead of switching between maps, social media reviews, and delivery portals, we built a single interface 
+            where you can discover nearby cafes, restaurants, and hidden local street-food stalls.
           </p>
-          <p>
-            Our mission is to provide an unforgettable culinary journey, leveraging the power of the MERN stack 
-            to ensure that your experience is as smooth as our signature espresso.
+          <p style={{ lineHeight: 1.7 }}>
+            We leverage geolocation queries, distance sorting (via Haversine calculations), and integrations like 
+            the Swiggy Developer Portal to give food lovers the most convenient way to decide where to eat next.
           </p>
           
-          <div style={{ display: 'flex', gap: '2rem', marginTop: '2rem' }}>
+          <div style={{ display: 'flex', gap: '2rem', marginTop: '3rem' }}>
             <div>
-              <h3 style={{ color: 'var(--primary)', fontSize: '2rem' }}>5k+</h3>
-              <p style={{ fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 600 }}>Happy Customers</p>
+              <h3 style={{ color: 'var(--primary)', fontSize: '2rem' }}>50+</h3>
+              <p style={{ fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700, color: 'var(--text-muted)' }}>Partner Spots</p>
             </div>
             <div>
-              <h3 style={{ color: 'var(--primary)', fontSize: '2rem' }}>25+</h3>
-              <p style={{ fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 600 }}>Gourmet Dishes</p>
+              <h3 style={{ color: 'var(--primary)', fontSize: '2rem' }}>450+</h3>
+              <p style={{ fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700, color: 'var(--text-muted)' }}>Curated Dishes</p>
             </div>
             <div>
-              <h3 style={{ color: 'var(--primary)', fontSize: '2rem' }}>12</h3>
-              <p style={{ fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 600 }}>Expert Chefs</p>
+              <h3 style={{ color: 'var(--primary)', fontSize: '2rem' }}>10k+</h3>
+              <p style={{ fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700, color: 'var(--text-muted)' }}>Monthly Searches</p>
             </div>
           </div>
         </div>
@@ -45,16 +46,17 @@ export default function About() {
         <div 
           className="card" 
           style={{ 
-            height: '100%', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%)',
-            border: '2px dashed var(--primary)'
+            background: 'rgba(255, 82, 59, 0.05)',
+            border: '2px dashed var(--primary)',
+            borderRadius: 'var(--radius-md)',
+            padding: '3rem'
           }}
         >
-          <p className="playfair" style={{ fontSize: '1.5rem', textAlign: 'center', color: 'var(--primary-dark)' }}>
-            "Good food is the foundation of genuine happiness."
+          <p style={{ fontSize: '1.4rem', textAlign: 'center', color: 'var(--text-main)', fontStyle: 'italic', lineHeight: 1.6 }}>
+            "Good food is the foundation of genuine happiness, and finding it should be effortless."
           </p>
         </div>
       </div>

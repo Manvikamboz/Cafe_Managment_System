@@ -1,11 +1,19 @@
 const asyncHandler = require('express-async-handler');
-const { Review, MenuItem } = require('../models');
+const { Review, Eatery } = require('../models');
 
-// @desc    Get all reviews
+// @desc    Get all reviews or reviews by eatery
 // @route   GET /api/reviews
 // @access  Public
 const getReviews = asyncHandler(async (req, res) => {
-  const reviews = await Review.find().sort({ createdAt: -1 }).populate('menuItemId');
+  const { eateryId } = req.query;
+  let query = {};
+  if (eateryId) {
+    query.eateryId = eateryId;
+  }
+  const reviews = await Review.find(query)
+    .sort({ createdAt: -1 })
+    .populate('eateryId')
+    .populate('menuItemId');
   res.json(reviews);
 });
 
@@ -13,25 +21,35 @@ const getReviews = asyncHandler(async (req, res) => {
 // @route   POST /api/reviews
 // @access  Public
 const createReview = asyncHandler(async (req, res) => {
-  const { menuItemId, email, rating, comment } = req.body;
+  const { eateryId, menuItemId, email, userName, rating, comment } = req.body;
 
-  if (!menuItemId || !email || !rating || !comment) {
+  if (!eateryId || !email || !rating || !comment) {
     res.status(400);
-    throw new Error('All fields are required');
+    throw new Error('Eatery, email, rating, and comment are required');
   }
 
-  const menuItem = await MenuItem.findById(menuItemId);
-  if (!menuItem) {
+  const eatery = await Eatery.findById(eateryId);
+  if (!eatery) {
     res.status(404);
-    throw new Error('Menu item not found');
+    throw new Error('Eatery not found');
   }
 
   const review = await Review.create({
-    menuItemId,
+    eateryId,
+    menuItemId: menuItemId || null,
     email,
-    rating,
+    userName: userName || 'Anonymous Foodie',
+    rating: Number(rating),
     comment,
   });
+
+  // Recalculate average rating for the eatery
+  const reviews = await Review.find({ eateryId });
+  if (reviews.length > 0) {
+    const avgRating = reviews.reduce((acc, item) => item.rating + acc, 0) / reviews.length;
+    eatery.rating = parseFloat(avgRating.toFixed(1));
+    await eatery.save();
+  }
 
   res.status(201).json(review);
 });

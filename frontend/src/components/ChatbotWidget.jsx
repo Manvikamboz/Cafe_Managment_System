@@ -5,7 +5,7 @@ import { MessageSquare, Send, X } from 'lucide-react';
 export default function ChatbotWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'bot', text: 'Welcome to Smart Café! I am your personal barista assistant. How can I help you today?' }
+    { role: 'bot', text: 'Welcome to FoodSpot! I am your local food finder assistant. Ask me to find nearby cafes, street-food stalls, or restaurant recommendations!' }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -38,7 +38,7 @@ export default function ChatbotWidget() {
       ) : (
         <div className="chatbot-window card">
           <div className="chatbot-header">
-            <h3>Smart Assistant</h3>
+            <h3>FoodSpot Guide</h3>
             <button onClick={() => setIsOpen(false)}><X size={20} /></button>
           </div>
           <div className="chatbot-messages">

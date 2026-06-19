@@ -21,6 +21,12 @@ const userSchema = mongoose.Schema(
       enum: ['customer', 'admin', 'staff'],
       default: 'customer',
     },
+    favorites: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Eatery',
+      },
+    ],
   },
   {
     timestamps: true,
