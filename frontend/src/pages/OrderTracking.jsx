@@ -24,7 +24,8 @@ export default function OrderTracking() {
     fetchOrder();
 
     // Setup Socket.io for live updates
-    const socket = io(window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
+    const socket = io(socketUrl);
     socket.emit('joinOrder', orderId);
 
     socket.on('orderStatusUpdated', (data) => {
