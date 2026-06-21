@@ -12,11 +12,6 @@ module.exports = {
     io.on('connection', (socket) => {
       console.log('New client connected:', socket.id);
 
-      socket.on('joinOrder', (orderId) => {
-        socket.join(orderId);
-        console.log(`Socket ${socket.id} joined order room: ${orderId}`);
-      });
-
       socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
       });
@@ -29,10 +24,5 @@ module.exports = {
       throw new Error('Socket.io not initialized!');
     }
     return io;
-  },
-  emitOrderStatus: (orderId, status) => {
-    if (io) {
-      io.to(orderId.toString()).emit('orderStatusUpdated', { orderId, status });
-    }
   },
 };

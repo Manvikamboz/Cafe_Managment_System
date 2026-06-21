@@ -23,8 +23,7 @@ export default function About() {
             where you can discover nearby cafes, restaurants, and hidden local street-food stalls.
           </p>
           <p style={{ lineHeight: 1.7 }}>
-            We leverage geolocation queries, distance sorting (via Haversine calculations), and integrations like 
-            the Swiggy Developer Portal to give food lovers the most convenient way to decide where to eat next.
+            We leverage geolocation queries, distance sorting (via Haversine calculations), and OpenStreetMap APIs to give food lovers the most convenient way to decide where to eat next.
           </p>
           
           <div style={{ display: 'flex', gap: '2rem', marginTop: '3rem' }}>

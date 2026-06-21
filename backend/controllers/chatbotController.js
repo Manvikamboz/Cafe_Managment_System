@@ -30,8 +30,8 @@ const processMessage = asyncHandler(async (req, res) => {
     } else {
       response = "We love local street food! I will look up some famous stalls for you. What type of street food are you in the mood for?";
     }
-  } else if (lowerMsg.includes("order") || lowerMsg.includes("track") || lowerMsg.includes("swiggy")) {
-    response = "At FoodSpot, you can order directly through our platform, or use our 'Order via Swiggy' redirection link on any restaurant page for fast external delivery!";
+  } else if (lowerMsg.includes("order") || lowerMsg.includes("track") || lowerMsg.includes("swiggy") || lowerMsg.includes("delivery")) {
+    response = "FoodSpot is a discovery platform designed to help you find local food spots, street-food stalls, and premium restaurants near your location so you can visit them! We do not offer direct food delivery, but you can find their map links to navigate there directly.";
   } else if (lowerMsg.includes("hello") || lowerMsg.includes("hi") || lowerMsg.includes("hey")) {
     response = "Hello! Welcome to FoodSpot. I'm your local culinary guide. I can help you discover nearby cafes, premium restaurants, or hidden street-food gems. What are you craving today?";
   } else if (lowerMsg.includes("price") || lowerMsg.includes("budget") || lowerMsg.includes("cheap")) {

@@ -1,28 +1,62 @@
 import { useEffect, useState } from 'react';
 import API from '../api/axios';
-import { Star, Quote, Utensils } from 'lucide-react';
+import { Star, Quote, Utensils, MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Reviews() {
-  const [reviews, setReviews] = useState([]);
+  const [allEntries, setAllEntries] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchReviews = async () => {
+    const fetchAll = async () => {
       try {
-        const { data } = await API.get('/reviews');
-        setReviews(data);
+        // Fetch from both collections in parallel
+        const [reviewsRes, feedbackRes] = await Promise.all([
+          API.get('/reviews'),
+          API.get('/feedback'),
+        ]);
+
+        // Normalize reviews (from eatery detail pages)
+        const reviews = reviewsRes.data.map(r => ({
+          _id: r._id,
+          userName: r.userName || r.email?.split('@')[0]?.toUpperCase() || 'Foodie',
+          email: r.email,
+          rating: r.rating,
+          comment: r.comment,
+          eateryName: r.eateryId?.name || null,
+          source: 'review',
+          createdAt: r.createdAt,
+        }));
+
+        // Normalize feedback (from Help & Feedback page)
+        const feedback = feedbackRes.data.map(f => ({
+          _id: f._id,
+          userName: f.name || f.email?.split('@')[0]?.toUpperCase() || 'Foodie',
+          email: f.email,
+          rating: f.rating,
+          comment: f.message,  // Feedback uses 'message', Review uses 'comment'
+          eateryName: null,
+          source: 'feedback',
+          createdAt: f.createdAt,
+        }));
+
+        // Merge and sort newest first
+        const combined = [...reviews, ...feedback].sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        setAllEntries(combined);
       } catch (err) {
-        console.error('Failed to fetch reviews');
+        console.error('Failed to fetch wall of fame entries', err);
       } finally {
         setLoading(false);
       }
     };
-    fetchReviews();
+    fetchAll();
   }, []);
 
   return (
-    <motion.section 
+    <motion.section
       className="container"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -40,61 +74,78 @@ export default function Reviews() {
         <div style={{ textAlign: 'center', padding: '5rem', color: 'var(--primary)' }}>Gathering culinary stories...</div>
       ) : (
         <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2rem' }}>
-          {reviews.length > 0 ? (
-            reviews.map((review, i) => (
-              <motion.div 
-                key={review._id} 
+          {allEntries.length > 0 ? (
+            allEntries.map((entry, i) => (
+              <motion.div
+                key={entry._id}
                 className="card"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: i * 0.05 }}
-                style={{ 
-                  background: 'var(--bg-card)', 
-                  border: '1px solid var(--border-light)', 
-                  borderRadius: 'var(--radius-md)', 
+                style={{
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-light)',
+                  borderRadius: 'var(--radius-md)',
                   position: 'relative',
                   color: 'var(--text-main)',
-                  padding: '2.5rem'
+                  padding: '2.5rem',
                 }}
               >
                 <Quote size={40} style={{ position: 'absolute', top: '-15px', left: '20px', color: 'var(--primary)', opacity: 0.15 }} />
-                
+
                 <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '1rem' }}>
                   {[...Array(5)].map((_, starI) => (
-                    <Star 
-                      key={starI} 
-                      size={14} 
-                      fill={starI < review.rating ? "var(--primary)" : "none"} 
-                      color={starI < review.rating ? "var(--primary)" : "#4b5563"} 
+                    <Star
+                      key={starI}
+                      size={14}
+                      fill={starI < entry.rating ? 'var(--primary)' : 'none'}
+                      color={starI < entry.rating ? 'var(--primary)' : '#4b5563'}
                     />
                   ))}
                 </div>
-                
+
                 <p style={{ fontStyle: 'italic', color: 'var(--text-main)', fontSize: '1.05rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-                  "{review.comment}"
+                  "{entry.comment}"
                 </p>
-                
+
                 <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
                     <p style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--text-main)' }}>
-                      {review.userName || review.email.split('@')[0].toUpperCase()}
+                      {entry.userName}
                     </p>
                     <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>VERIFIED FOODIE</p>
                   </div>
-                  {review.eateryId && (
-                    <span style={{ 
-                      fontSize: '0.65rem', 
-                      background: 'rgba(255, 82, 59, 0.1)', 
-                      color: 'var(--primary)', 
-                      padding: '0.35rem 0.75rem', 
-                      borderRadius: 'var(--radius-full)', 
+
+                  {/* Show eatery badge for eatery reviews, feedback badge for general feedback */}
+                  {entry.eateryName ? (
+                    <span style={{
+                      fontSize: '0.65rem',
+                      background: 'rgba(255, 82, 59, 0.1)',
+                      color: 'var(--primary)',
+                      padding: '0.35rem 0.75rem',
+                      borderRadius: 'var(--radius-full)',
                       fontWeight: 700,
                       display: 'flex',
                       alignItems: 'center',
                       gap: '0.25rem'
                     }}>
                       <Utensils size={10} />
-                      {review.eateryId.name || 'EATERY'}
+                      {entry.eateryName}
+                    </span>
+                  ) : (
+                    <span style={{
+                      fontSize: '0.65rem',
+                      background: 'rgba(255, 82, 59, 0.08)',
+                      color: 'var(--text-muted)',
+                      padding: '0.35rem 0.75rem',
+                      borderRadius: 'var(--radius-full)',
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.25rem'
+                    }}>
+                      <MessageCircle size={10} />
+                      GENERAL FEEDBACK
                     </span>
                   )}
                 </div>

@@ -82,7 +82,7 @@ export default function Register() {
               value={name} 
               onChange={(e) => setName(e.target.value)} 
               required 
-              style={{ borderRadius: '4px', border: '1px solid #ddd', background: '#fcfcfc' }}
+              style={{ borderRadius: '4px', border: '1px solid #ddd', background: '#f9fafb', color: '#1f2937' }}
             />
           </div>
           <div className="form-group">
@@ -95,7 +95,7 @@ export default function Register() {
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
               required 
-              style={{ borderRadius: '4px', border: '1px solid #ddd', background: '#fcfcfc' }}
+              style={{ borderRadius: '4px', border: '1px solid #ddd', background: '#f9fafb', color: '#1f2937' }}
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
@@ -109,7 +109,7 @@ export default function Register() {
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
                 required 
-                style={{ borderRadius: '4px', border: '1px solid #ddd', background: '#fcfcfc' }}
+                style={{ borderRadius: '4px', border: '1px solid #ddd', background: '#f9fafb', color: '#1f2937' }}
               />
             </div>
             <div className="form-group">
@@ -122,7 +122,7 @@ export default function Register() {
                 value={confirmPassword} 
                 onChange={(e) => setConfirmPassword(e.target.value)} 
                 required 
-                style={{ borderRadius: '4px', border: '1px solid #ddd', background: '#fcfcfc' }}
+                style={{ borderRadius: '4px', border: '1px solid #ddd', background: '#f9fafb', color: '#1f2937' }}
               />
             </div>
           </div>

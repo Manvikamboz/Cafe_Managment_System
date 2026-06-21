@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 
 export default function Home() {
-  const { user, setUser } = useAuth();
+  const { user, refreshUser } = useAuth();
   
   // States
   const [eateries, setEateries] = useState([]);
@@ -18,22 +18,36 @@ export default function Home() {
   const [selectedCuisine, setSelectedCuisine] = useState('');
   
   // Location States
-  const [userLocation, setUserLocation] = useState({
-    lat: 12.9716, // Bangalore Center Default
-    lng: 77.5946,
-    name: 'MG Road, Bangalore (Default)'
+  const [userLocation, setUserLocation] = useState(() => {
+    const saved = sessionStorage.getItem('userLocation');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return {
+      lat: 28.6304, // New Delhi Default
+      lng: 77.2177,
+      name: 'Connaught Place, New Delhi (Default)'
+    };
   });
   const [gpsLoading, setGpsLoading] = useState(false);
 
-  // Preset location simulations for testing
-  const presets = [
-    { name: 'MG Road (Center)', lat: 12.9716, lng: 77.5946 },
-    { name: 'Indiranagar', lat: 12.9750, lng: 77.5990 },
-    { name: 'Koramangala', lat: 12.9690, lng: 77.5890 },
-    { name: 'Jayanagar', lat: 12.9620, lng: 77.6010 }
-  ];
-
   const cuisines = ['All Cuisines', 'Italian', 'South Indian', 'Chinese', 'Street Food', 'Beverages', 'Dessert'];
+
+  // Auto-request location on very first load of the site
+  useEffect(() => {
+    if (!sessionStorage.getItem('userLocation')) {
+      detectGPSLocation();
+    }
+  }, []);
+
+  // Save location to sessionStorage on change
+  useEffect(() => {
+    sessionStorage.setItem('userLocation', JSON.stringify(userLocation));
+  }, [userLocation]);
 
   useEffect(() => {
     fetchEateries();
@@ -70,12 +84,27 @@ export default function Home() {
     }
     setGpsLoading(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setUserLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-          name: 'Your GPS Coordinates'
-        });
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        let name = 'Your GPS Coordinates';
+        
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
+            headers: { 'User-Agent': 'FoodSpotApp' }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.display_name) {
+              // Get the first three components (e.g. Neighborhood, City, State)
+              name = data.display_name.split(',').slice(0, 3).join(', ');
+            }
+          }
+        } catch (err) {
+          console.error('Reverse geocoding failed:', err);
+        }
+
+        setUserLocation({ lat, lng, name });
         setGpsLoading(false);
         toast.success('Location updated via GPS!');
       },
@@ -95,12 +124,7 @@ export default function Home() {
     try {
       const { data } = await API.post(`/eateries/${eateryId}/favorite`);
       toast.success(data.message);
-      
-      // Update local user state
-      const updatedUser = { ...user, favorites: data.favorites };
-      localStorage.setItem('userInfo', JSON.stringify(updatedUser));
-      // Re-trigger auth context state update if component listening
-      if (setUser) setUser(updatedUser);
+      await refreshUser(); // Re-fetch user profile from DB
     } catch (err) {
       toast.error('Failed to toggle favorite.');
     }
@@ -130,7 +154,7 @@ export default function Home() {
               <span className="hero-badge">Smart Location Discovery</span>
               <h1 className="hero-title">Find Local Gems & Famous <span className="gradient-text">Food Spots</span></h1>
               <p className="hero-subtitle">
-                Explore local eateries, check menu highlights, see ratings, and order directly or redirect to Swiggy.
+                Explore local eateries, check menu highlights, see ratings, and discover the best spots to visit near you.
               </p>
             </motion.div>
 
@@ -171,21 +195,6 @@ export default function Home() {
               >
                 {gpsLoading ? 'Detecting...' : 'Detect My GPS'}
               </button>
-            </div>
-            
-            <div className="presets-group">
-              <span className="presets-label">Simulate Proximity:</span>
-              <div className="presets-list">
-                {presets.map((preset) => (
-                  <button
-                    key={preset.name}
-                    className={`preset-tag ${userLocation.name.includes(preset.name) ? 'active' : ''}`}
-                    onClick={() => setUserLocation({ lat: preset.lat, lng: preset.lng, name: preset.name + ', Bangalore' })}
-                  >
-                    {preset.name}
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
         </div>
@@ -295,7 +304,7 @@ export default function Home() {
                   setSelectedBudget('');
                   setSelectedCuisine('');
                   setSearchQuery('');
-                  setUserLocation({ lat: 12.9716, lng: 77.5946, name: 'MG Road, Bangalore (Default)' });
+                  setUserLocation({ lat: 28.6304, lng: 77.2177, name: 'Connaught Place, New Delhi (Default)' });
                 }}
               >
                 Reset All Filters
@@ -336,6 +345,11 @@ export default function Home() {
                         <Star size={14} fill="currentColor" />
                         <span>{eatery.rating.toFixed(1)}</span>
                       </div>
+                    </div>
+
+                    <div className="address-row" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-muted)', fontSize: '0.8rem', margin: '0.4rem 0 0.6rem 0' }}>
+                      <MapPin size={13} style={{ flexShrink: 0, color: 'var(--primary)' }} />
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{eatery.address}</span>
                     </div>
 
                     <p className="spot-desc">{eatery.description}</p>
