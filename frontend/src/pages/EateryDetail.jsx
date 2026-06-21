@@ -1,32 +1,27 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Star, DollarSign, Clock, ArrowLeft, Heart, ShoppingBag, MessageSquare, ExternalLink, ShieldCheck } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { MapPin, Star, DollarSign, Clock, ArrowLeft, Heart, MessageSquare, ExternalLink } from 'lucide-react';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 
 export default function EateryDetail() {
   const { id } = useParams();
-  const { user, setUser } = useAuth();
+  const { user, refreshUser } = useAuth();
   
   // States
   const [eatery, setEatery] = useState(null);
   const [menu, setMenu] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Review Form States
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [email, setEmail] = useState('');
   const [userName, setUserName] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
-
-  // Swiggy Integration Modal
-  const [showSwiggyModal, setShowSwiggyModal] = useState(false);
-  const [simulatedDeliveryStatus, setSimulatedDeliveryStatus] = useState('Idle');
-  const [simSessionId, setSimSessionId] = useState(0);
 
   useEffect(() => {
     fetchEateryDetails();
@@ -58,17 +53,7 @@ export default function EateryDetail() {
     }
   };
 
-  const addToCart = async (itemId) => {
-    if (!user) {
-      return toast.error('Please log in to add items to your cart');
-    }
-    try {
-      await API.post('/cart/add', { menuItemId: itemId, quantity: 1 });
-      toast.success('Added to basket!');
-    } catch (err) {
-      toast.error('Failed to add item to basket');
-    }
-  };
+
 
   const submitReview = async (e) => {
     e.preventDefault();
@@ -106,9 +91,7 @@ export default function EateryDetail() {
     try {
       const { data } = await API.post(`/eateries/${id}/favorite`);
       toast.success(data.message);
-      const updatedUser = { ...user, favorites: data.favorites };
-      localStorage.setItem('userInfo', JSON.stringify(updatedUser));
-      if (setUser) setUser(updatedUser);
+      await refreshUser(); // Re-fetch user profile from DB
     } catch (err) {
       toast.error('Failed to save spot');
     }
@@ -119,23 +102,7 @@ export default function EateryDetail() {
     return user.favorites.some(fav => (fav._id || fav) === id);
   };
 
-  // Swiggy Integration simulation runner
-  const startSwiggySimulation = () => {
-    setSimSessionId(prev => prev + 1);
-    setSimulatedDeliveryStatus('Preparing Order...');
-    setTimeout(() => {
-      setSimulatedDeliveryStatus('Swiggy Valet Assigned (Ramesh Kumar)...');
-      setTimeout(() => {
-        setSimulatedDeliveryStatus('Valet at Eatery. Picking up fresh food...');
-        setTimeout(() => {
-          setSimulatedDeliveryStatus('Valet is out for delivery! Heading towards your coordinates...');
-          setTimeout(() => {
-            setSimulatedDeliveryStatus('Delivered! Bon Appétit! (Simulation complete)');
-          }, 3500);
-        }, 3000);
-      }, 3000);
-    }, 2000);
-  };
+
 
   if (loading) {
     return (
@@ -287,14 +254,7 @@ export default function EateryDetail() {
                       <p className="menu-row-desc">{item.description}</p>
                       <span className="menu-row-cat-badge">{item.category}</span>
                     </div>
-                    <button 
-                      onClick={() => addToCart(item._id)}
-                      className="menu-row-add-btn"
-                      disabled={!item.isAvailable}
-                    >
-                      <ShoppingBag size={16} />
-                      <span>Add</span>
-                    </button>
+
                   </div>
                 ))}
               </div>
@@ -304,44 +264,7 @@ export default function EateryDetail() {
 
         {/* Right Column: Swiggy Redirection & Review Posting */}
         <div className="details-right">
-          {/* Swiggy Integration Portal Card */}
-          <div className="swiggy-partner-card card">
-            <div className="swiggy-logo-header">
-              <span className="swiggy-badge">Developer Integration</span>
-              <img 
-                src="https://upload.wikimedia.org/wikipedia/en/thumb/1/12/Swiggy_logo.svg/1200px-Swiggy_logo.svg.png" 
-                alt="Swiggy Logo" 
-                className="swiggy-logo-img"
-              />
-            </div>
-            
-            <h4>Craving Delivery?</h4>
-            <p className="swiggy-description">
-              FoodSpot integrates with Swiggy APIs! Check available delivery partners and dispatch instantly via the Swiggy Developer Portal.
-            </p>
 
-            <div className="swiggy-actions">
-              <a 
-                href="https://developer.swiggy.com/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="btn-swiggy-portal"
-              >
-                <span>Swiggy Dev Portal</span>
-                <ExternalLink size={14} />
-              </a>
-
-              <button 
-                onClick={() => {
-                  setShowSwiggyModal(true);
-                  setSimulatedDeliveryStatus('Idle');
-                }} 
-                className="btn-swiggy-simulate"
-              >
-                Simulate Delivery
-              </button>
-            </div>
-          </div>
 
           {/* Add Review Form */}
           <div className="add-review-card card">
@@ -440,57 +363,7 @@ export default function EateryDetail() {
         </div>
       </div>
 
-      {/* Swiggy Simulation Modal */}
-      <AnimatePresence>
-        {showSwiggyModal && (
-          <div className="modal-backdrop" onClick={() => setShowSwiggyModal(false)}>
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="modal-content swiggy-sim-modal"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="modal-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <ShieldCheck size={20} style={{ color: '#fc8019' }} />
-                  <h3 style={{ color: '#fc8019' }}>Swiggy Developer Sandbox</h3>
-                </div>
-                <button className="close-btn" onClick={() => setShowSwiggyModal(false)}>×</button>
-              </div>
-              <div className="modal-body">
-                <p>This sandbox simulates the Swiggy Platform Integration API (v2) for dispatcher and order routing channels.</p>
-                
-                <div className="simulation-flow-box">
-                  <div className="sim-location-match">
-                    <strong>Pickup:</strong> {eatery.name} ({eatery.address})<br />
-                    <strong>Coordinates:</strong> Lat {eatery.lat}, Lng {eatery.lng}
-                  </div>
-                  
-                  <div className="sim-status-box">
-                    <span className="status-label">Simulated Status:</span>
-                    <h3 className="status-display">{simulatedDeliveryStatus}</h3>
-                  </div>
 
-                  {simulatedDeliveryStatus !== 'Idle' && (
-                    <div className="delivery-progress-track" key={simSessionId}>
-                      <div className="progress-bar-fill animate-progress"></div>
-                    </div>
-                  )}
-
-                  <button 
-                    onClick={startSwiggySimulation} 
-                    className="btn-trigger-sim"
-                    disabled={simulatedDeliveryStatus !== 'Idle' && !simulatedDeliveryStatus.includes('complete')}
-                  >
-                    {simulatedDeliveryStatus === 'Idle' ? 'Dispatch Swiggy Courier' : simulatedDeliveryStatus.includes('complete') ? 'Dispatch Again' : 'Delivery in Progress...'}
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </motion.section>
   );
 }

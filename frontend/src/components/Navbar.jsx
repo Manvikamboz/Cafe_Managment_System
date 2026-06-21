@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ShoppingBag, LogOut, Compass } from 'lucide-react';
+import { LogOut, Compass } from 'lucide-react';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -39,22 +39,11 @@ export default function Navbar() {
             </NavLink>
           </li>
         ))}
-        {user && user.role === 'admin' && (
-          <li>
-            <NavLink to="/admin" className="nav-link admin-nav">Admin Dashboard</NavLink>
-          </li>
-        )}
-        {user && (user.role === 'staff' || user.role === 'admin') && (
-          <li>
-            <NavLink to="/staff" className="nav-link staff-nav">Restaurant Owner</NavLink>
-          </li>
-        )}
+
       </ul>
 
       <div className="nav-actions">
-        <Link to="/cart" className="cart-badge-btn" title="View Cart">
-          <ShoppingBag size={20} />
-        </Link>
+
 
         {user ? (
           <div className="user-profile-nav">
